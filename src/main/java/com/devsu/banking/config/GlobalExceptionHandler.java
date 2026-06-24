@@ -19,12 +19,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SaldoInsuficienteException.class)
     public ResponseEntity<Map<String, Object>> handleSaldoInsuficiente(SaldoInsuficienteException ex) {
-        return buildError(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(CupoDiarioExcedidoException.class)
     public ResponseEntity<Map<String, Object>> handleCupoDiario(CupoDiarioExcedidoException ex) {
-        return buildError(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        return buildError(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)

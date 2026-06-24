@@ -1,15 +1,25 @@
 package com.devsu.banking.web.controller;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.devsu.banking.domain.dto.ClienteRequestDto;
 import com.devsu.banking.domain.dto.ClienteResponseDto;
 import com.devsu.banking.domain.service.ClienteService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/clientes")
@@ -35,13 +45,13 @@ public class ClienteController {
 
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponseDto> update(@PathVariable Long id,
-                                                     @Valid @RequestBody ClienteRequestDto dto) {
+            @Valid @RequestBody ClienteRequestDto dto) {
         return ResponseEntity.ok(clienteService.update(id, dto));
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<ClienteResponseDto> patch(@PathVariable Long id,
-                                                    @RequestBody ClienteRequestDto dto) {
+            @RequestBody ClienteRequestDto dto) {
         return ResponseEntity.ok(clienteService.patch(id, dto));
     }
 

@@ -1,13 +1,18 @@
 package com.devsu.banking.web.controller;
 
-import com.devsu.banking.domain.dto.ReporteDto;
-import com.devsu.banking.domain.service.ReporteService;
+import java.time.LocalDate;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
+import com.devsu.banking.domain.dto.ReporteDto;
+import com.devsu.banking.domain.service.ReporteService;
 
 @RestController
 @RequestMapping("/reportes")
@@ -20,8 +25,8 @@ public class ReporteController {
     }
 
     /**
-     * GET /api/reportes?fecha=2024-01-01,2024-12-31&cliente=1
-     * Optional: &format=pdf  or  Accept: application/pdf
+     * GET /api/reportes?fecha=2024-01-01,2024-12-31&cliente=1 Optional:
+     * &format=pdf or Accept: application/pdf
      */
     @GetMapping
     public ResponseEntity<?> reporte(
@@ -29,7 +34,7 @@ public class ReporteController {
             @RequestParam("cliente") Long clienteId,
             @RequestParam(value = "format", required = false, defaultValue = "json") String format,
             @RequestHeader(value = HttpHeaders.ACCEPT, required = false,
-                           defaultValue = "application/json") String accept
+                    defaultValue = "application/json") String accept
     ) {
         String[] parts = fechaRango.split(",");
         if (parts.length != 2) {
