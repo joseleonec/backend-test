@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsu.banking.config.exception.ResourceAlreadyExistsException;
 import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.domain.dto.ClienteRequestDto;
 import com.devsu.banking.domain.dto.ClienteResponseDto;
@@ -37,6 +38,9 @@ public class ClienteService {
     }
 
     public ClienteResponseDto create(ClienteRequestDto dto) {
+        if (clienteRepository.existsByClienteid(dto.clienteid())) {
+            throw new ResourceAlreadyExistsException("Cliente", "clienteid", dto.clienteid());
+        }
         Cliente cliente = clienteMapper.toEntity(dto);
         cliente.setContrasena(passwordEncoder.encode(dto.contrasena()));
         return clienteMapper.toDto(clienteRepository.save(cliente));
