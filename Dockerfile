@@ -1,12 +1,25 @@
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS build
-WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline -q
-COPY src ./src
-RUN mvn package -DskipTests -q
+FROM eclipse-temurin:25-jdk-jammy AS builder
+WORKDIR /build
 
-FROM eclipse-temurin:21-jre-alpine
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+RUN chmod +x mvnw && ./mvnw dependency:go-offline
+
+COPY src src
+RUN ./mvnw clean package -DskipTests
+
+FROM eclipse-temurin:25-jre-jammy
 WORKDIR /app
-COPY --from=build /app/target/banking-0.0.1-SNAPSHOT.jar app.jar
+
+RUN addgroup --system spring && adduser --system spring --ingroup spring
+USER spring:spring
+
+COPY --from=builder /build/target/*.jar app.jar
+
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+
+ENTRYPOINT ["java", \
+            "-XX:MaxRAMPercentage=75.0", \
+            "-jar", \
+            "app.jar"]
