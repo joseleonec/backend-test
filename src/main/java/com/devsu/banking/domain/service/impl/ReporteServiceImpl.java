@@ -42,32 +42,32 @@ public class ReporteServiceImpl implements ReporteService {
     private final MovimientoMapper movimientoMapper;
 
     @Override
-    public ReporteDto generarReporte(Long clienteId, LocalDate desde, LocalDate hasta) {
+    public ReporteDto generarReporte(String clienteid, LocalDate desde, LocalDate hasta) {
 
-        var cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", clienteId));
+        var cliente = clienteRepository.findByClienteid(clienteid)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", clienteid));
 
         var dateFrom = desde.atStartOfDay();
         var dateTo = hasta.plusDays(1).atStartOfDay();
 
         List<Movimiento> movimientos = movimientoRepository
-                .findByCuentaClienteIdAndFechaBetween(clienteId, dateFrom, dateTo);
+                .findByCuentaClienteClienteidAndFechaBetween(clienteid, dateFrom, dateTo);
 
         Map<Cuenta, List<Movimiento>> byCuenta = movimientos.stream()
                 .collect(Collectors.groupingBy(Movimiento::getCuenta));
 
-        List<ReporteDto.CuentaReporteDto> cuentasDto = cuentaRepository.findByClienteId(clienteId)
+        List<ReporteDto.CuentaReporteDto> cuentasDto = cuentaRepository.findByClienteClienteid(clienteid)
                 .stream()
                 .map(cuenta -> buildCuentaReporte(cuenta, byCuenta.getOrDefault(cuenta, List.of())))
                 .toList();
 
-        return new ReporteDto(clienteId, cliente.getNombre(), desde, hasta, cuentasDto);
+        return new ReporteDto(cliente.getId(), cliente.getNombre(), desde, hasta, cuentasDto);
     }
 
     @Override
-    public byte[] generarReportePdf(Long clienteId, LocalDate desde, LocalDate hasta) {
+    public byte[] generarReportePdf(String clienteid, LocalDate desde, LocalDate hasta) {
 
-        ReporteDto reporte = generarReporte(clienteId, desde, hasta);
+        ReporteDto reporte = generarReporte(clienteid, desde, hasta);
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             try (Document doc = new Document(PageSize.A4)) {

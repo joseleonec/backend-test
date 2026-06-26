@@ -16,6 +16,8 @@ public interface MovimientoRepository extends JpaRepository<Movimiento, Long> {
 
     List<Movimiento> findByCuentaClienteIdAndFechaBetween(Long clienteId, LocalDateTime from, LocalDateTime to);
 
+    List<Movimiento> findByCuentaClienteClienteidAndFechaBetween(String clienteid, LocalDateTime from, LocalDateTime to);
+
     @Query("""
             SELECT COALESCE(SUM(m.valor), 0)
             FROM Movimiento m

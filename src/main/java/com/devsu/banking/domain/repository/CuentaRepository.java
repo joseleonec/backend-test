@@ -13,5 +13,7 @@ public interface CuentaRepository extends JpaRepository<Cuenta, Long> {
 
     List<Cuenta> findByClienteId(Long clienteId);
 
+    List<Cuenta> findByClienteClienteid(String clienteid);
+
     boolean existsByNumeroCuenta(String numeroCuenta);
 }

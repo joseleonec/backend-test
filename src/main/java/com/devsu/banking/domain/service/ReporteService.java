@@ -6,7 +6,7 @@ import com.devsu.banking.domain.dto.ReporteDto;
 
 public interface ReporteService {
 
-    ReporteDto generarReporte(Long clienteId, LocalDate desde, LocalDate hasta);
+    ReporteDto generarReporte(String clienteid, LocalDate desde, LocalDate hasta);
 
-    byte[] generarReportePdf(Long clienteId, LocalDate desde, LocalDate hasta);
+    byte[] generarReportePdf(String clienteid, LocalDate desde, LocalDate hasta);
 }
