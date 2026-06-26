@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record ReporteDto(
-        Long clienteId,
+        String clienteId,
         String clienteNombre,
         LocalDate desde,
         LocalDate hasta,

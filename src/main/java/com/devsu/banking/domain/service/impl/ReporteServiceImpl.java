@@ -51,7 +51,7 @@ public class ReporteServiceImpl implements ReporteService {
         var dateTo = hasta.plusDays(1).atStartOfDay();
 
         List<Movimiento> movimientos = movimientoRepository
-                .findByCuentaClienteClienteidAndFechaBetween(clienteid, dateFrom, dateTo);
+                .findByCuentaClienteIdAndFechaBetween(cliente.getId(), dateFrom, dateTo);
 
         Map<Cuenta, List<Movimiento>> byCuenta = movimientos.stream()
                 .collect(Collectors.groupingBy(Movimiento::getCuenta));
@@ -61,7 +61,7 @@ public class ReporteServiceImpl implements ReporteService {
                 .map(cuenta -> buildCuentaReporte(cuenta, byCuenta.getOrDefault(cuenta, List.of())))
                 .toList();
 
-        return new ReporteDto(cliente.getId(), cliente.getNombre(), desde, hasta, cuentasDto);
+        return new ReporteDto(cliente.getClienteid(), cliente.getNombre(), desde, hasta, cuentasDto);
     }
 
     @Override
