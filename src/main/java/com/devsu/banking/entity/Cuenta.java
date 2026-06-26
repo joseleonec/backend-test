@@ -45,6 +45,11 @@ public class Cuenta {
     @Column(name = "saldo_inicial", nullable = false, precision = 15, scale = 2)
     private BigDecimal saldoInicial;
 
+    @NotNull
+    @DecimalMin("0.00")
+    @Column(name = "saldo_actual", nullable = false, precision = 15, scale = 2)
+    private BigDecimal saldoActual;
+
     @Column(nullable = false)
     private Boolean estado = true;
 

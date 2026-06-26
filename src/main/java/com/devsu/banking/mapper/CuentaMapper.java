@@ -15,6 +15,7 @@ public interface CuentaMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "cliente", ignore = true)
+    @Mapping(target = "saldoActual", source = "saldoInicial")
     Cuenta toEntity(CuentaRequestDto dto);
 
     @Mapping(source = "cliente.id", target = "clienteId")
@@ -24,5 +25,6 @@ public interface CuentaMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "cliente", ignore = true)
+    @Mapping(target = "saldoActual", ignore = true)
     void updateFromDto(CuentaRequestDto dto, @MappingTarget Cuenta entity);
 }
