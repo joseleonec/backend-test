@@ -94,7 +94,9 @@ public class ReporteServiceImpl implements ReporteService {
                     for (MovimientoResponseDto mov : cuenta.movimientos()) {
                         doc.add(new Paragraph(
                                 "  " + mov.fecha() + " | " + mov.tipoMovimiento()
-                                + " | " + mov.valor() + " | Saldo: " + mov.saldo(), bodyFont));
+                                + " | Valor: " + mov.valor()
+                                + " | Saldo inicial: " + mov.saldoInicial()
+                                + " | Saldo disponible: " + mov.saldo(), bodyFont));
                     }
                     doc.add(Chunk.NEWLINE);
                 }

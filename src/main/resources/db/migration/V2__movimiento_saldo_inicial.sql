@@ -1,0 +1,2 @@
+ALTER TABLE movimiento
+    ADD COLUMN saldo_inicial NUMERIC(15, 2) NOT NULL DEFAULT 0;
