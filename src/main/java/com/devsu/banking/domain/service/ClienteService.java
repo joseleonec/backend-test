@@ -41,6 +41,9 @@ public class ClienteService {
         if (clienteRepository.existsByClienteid(dto.clienteid())) {
             throw new ResourceAlreadyExistsException("Cliente", "clienteid", dto.clienteid());
         }
+        if (clienteRepository.existsByIdentificacion(dto.identificacion())) {
+            throw new ResourceAlreadyExistsException("Cliente", "identificacion", dto.identificacion());
+        }
         Cliente cliente = clienteMapper.toEntity(dto);
         cliente.setContrasena(passwordEncoder.encode(dto.contrasena()));
         return clienteMapper.toDto(clienteRepository.save(cliente));

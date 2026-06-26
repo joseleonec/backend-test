@@ -3,6 +3,7 @@ package com.devsu.banking.config;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -16,6 +17,7 @@ import com.devsu.banking.config.exception.SaldoInsuficienteException;
 import com.devsu.banking.domain.dto.ErrorResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,6 +31,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(CupoDiarioExcedidoException.class)
     public ResponseEntity<ErrorResponseDto> handleCupoDiario(CupoDiarioExcedidoException ex,
             HttpServletRequest request) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleConstraintViolationException(ConstraintViolationException ex,
+            HttpServletRequest request) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDto> handleDataIntegrityViolationException(
+            DataIntegrityViolationException ex, HttpServletRequest request) {
+
         return buildError(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
