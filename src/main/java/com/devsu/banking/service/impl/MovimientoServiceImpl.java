@@ -58,7 +58,10 @@ public class MovimientoServiceImpl implements MovimientoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cuenta", dto.cuentaId()));
 
         var valor = normalizeValor(dto.tipoMovimiento(), dto.valor());
-        var nuevoSaldo = cuenta.getSaldoInicial().add(valor);
+
+        var saldoAnterior = cuenta.getSaldoActual();
+
+        var nuevoSaldo = saldoAnterior.add(valor);
 
         if ("DEBITO".equals(dto.tipoMovimiento())) {
             if (nuevoSaldo.compareTo(BigDecimal.ZERO) < 0) {
@@ -70,10 +73,11 @@ public class MovimientoServiceImpl implements MovimientoService {
         var movimiento = movimientoMapper.toEntity(dto);
         movimiento.setCuenta(cuenta);
         movimiento.setValor(valor);
+        movimiento.setSaldoInicial(saldoAnterior);
         movimiento.setSaldo(nuevoSaldo);
         movimiento.setFecha(LocalDateTime.now());
 
-        cuenta.setSaldoInicial(nuevoSaldo);
+        cuenta.setSaldoActual(nuevoSaldo);
 
         cuentaRepository.save(cuenta);
 

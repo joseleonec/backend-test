@@ -35,7 +35,7 @@ class MovimientoControllerTest {
         var request = new MovimientoByNumeroCuentaRequestDto("478758", "CREDITO", new BigDecimal("500.00"));
         var response = new MovimientoResponseDto(
                 1L, LocalDateTime.now(), "CREDITO",
-                new BigDecimal("500.00"), new BigDecimal("2500.00"), 1L, "478758");
+                new BigDecimal("500.00"), new BigDecimal("2000.00"), new BigDecimal("2500.00"), 1L, "478758");
 
         when(movimientoService.registrarPorNumeroCuenta(any())).thenReturn(response);
 
@@ -45,6 +45,7 @@ class MovimientoControllerTest {
         assertNotNull(result.getBody());
         assertEquals("CREDITO", result.getBody().tipoMovimiento());
         assertEquals(new BigDecimal("2500.00"), result.getBody().saldo());
+        assertEquals(new BigDecimal("2000.00"), result.getBody().saldoInicial());
     }
 
     @Test
@@ -67,7 +68,7 @@ class MovimientoControllerTest {
     void getMovimiento_byId_returns200() {
         var response = new MovimientoResponseDto(
                 1L, LocalDateTime.now(), "CREDITO",
-                new BigDecimal("200.00"), new BigDecimal("700.00"), 1L, "478758");
+                new BigDecimal("200.00"), new BigDecimal("500.00"), new BigDecimal("700.00"), 1L, "478758");
 
         when(movimientoService.findById(1L)).thenReturn(response);
 

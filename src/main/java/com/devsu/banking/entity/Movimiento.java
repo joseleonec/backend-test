@@ -45,6 +45,10 @@ public class Movimiento {
 
     @NotNull
     @Column(nullable = false, precision = 15, scale = 2)
+    private BigDecimal saldoInicial;
+
+    @NotNull
+    @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal saldo;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

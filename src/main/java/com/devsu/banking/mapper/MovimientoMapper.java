@@ -17,6 +17,7 @@ public interface MovimientoMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "cuenta", ignore = true)
     @Mapping(target = "saldo", ignore = true)
+    @Mapping(target = "saldoInicial", ignore = true)
     @Mapping(target = "fecha", ignore = true)
     Movimiento toEntity(MovimientoRequestDto dto);
 }

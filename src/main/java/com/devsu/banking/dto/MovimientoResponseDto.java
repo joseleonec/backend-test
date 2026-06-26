@@ -8,6 +8,7 @@ public record MovimientoResponseDto(
         LocalDateTime fecha,
         String tipoMovimiento,
         BigDecimal valor,
+        BigDecimal saldoInicial,
         BigDecimal saldo,
         Long cuentaId,
         String numeroCuenta

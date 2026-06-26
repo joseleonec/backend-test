@@ -123,7 +123,7 @@ public class ReporteServiceImpl implements ReporteService {
         return new ReporteDto.CuentaReporteDto(
                 cuenta.getNumeroCuenta(),
                 cuenta.getTipoCuenta(),
-                cuenta.getSaldoInicial(),
+                cuenta.getSaldoActual(),
                 totalCreditos,
                 totalDebitos,
                 movsDtos
