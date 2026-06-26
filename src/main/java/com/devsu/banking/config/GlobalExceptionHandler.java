@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.devsu.banking.config.exception.CupoDiarioExcedidoException;
+import com.devsu.banking.config.exception.ResourceAlreadyExistsException;
 import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.config.exception.SaldoInsuficienteException;
 import com.devsu.banking.domain.dto.ErrorResponseDto;
@@ -35,6 +36,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponseDto> handleNotFound(ResourceNotFoundException ex,
             HttpServletRequest request) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleAlreadyExists(ResourceAlreadyExistsException ex,
+            HttpServletRequest request) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage(), request);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

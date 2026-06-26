@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.devsu.banking.config.exception.ResourceAlreadyExistsException;
 import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.domain.dto.CuentaRequestDto;
 import com.devsu.banking.domain.dto.CuentaResponseDto;
@@ -38,6 +39,9 @@ public class CuentaService {
     }
 
     public CuentaResponseDto create(CuentaRequestDto dto) {
+        if (cuentaRepository.existsByNumeroCuenta(dto.numeroCuenta())) {
+            throw new ResourceAlreadyExistsException("Cuenta", "numeroCuenta", dto.numeroCuenta());
+        }
         Cuenta cuenta = cuentaMapper.toEntity(dto);
         cuenta.setCliente(resolveCliente(dto.clienteId()));
         return cuentaMapper.toDto(cuentaRepository.save(cuenta));
