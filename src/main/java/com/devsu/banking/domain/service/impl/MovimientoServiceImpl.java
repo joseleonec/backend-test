@@ -14,7 +14,6 @@ import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.config.exception.SaldoInsuficienteException;
 import com.devsu.banking.domain.dto.MovimientoRequestDto;
 import com.devsu.banking.domain.dto.MovimientoResponseDto;
-import com.devsu.banking.domain.entity.Cuenta;
 import com.devsu.banking.domain.entity.Movimiento;
 import com.devsu.banking.domain.mapper.MovimientoMapper;
 import com.devsu.banking.domain.repository.CuentaRepository;
@@ -38,6 +37,7 @@ public class MovimientoServiceImpl implements MovimientoService {
     @Override
     @Transactional(readOnly = true)
     public List<MovimientoResponseDto> findAll() {
+
         return movimientoRepository.findAll().stream()
                 .map(movimientoMapper::toDto)
                 .toList();
@@ -46,16 +46,18 @@ public class MovimientoServiceImpl implements MovimientoService {
     @Override
     @Transactional(readOnly = true)
     public MovimientoResponseDto findById(Long id) {
+
         return movimientoMapper.toDto(getOrThrow(id));
     }
 
     @Override
     public MovimientoResponseDto registrar(MovimientoRequestDto dto) {
-        Cuenta cuenta = cuentaRepository.findById(dto.cuentaId())
+
+        var cuenta = cuentaRepository.findById(dto.cuentaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Cuenta", dto.cuentaId()));
 
-        BigDecimal valor = normalizeValor(dto.tipoMovimiento(), dto.valor());
-        BigDecimal nuevoSaldo = cuenta.getSaldoInicial().add(valor);
+        var valor = normalizeValor(dto.tipoMovimiento(), dto.valor());
+        var nuevoSaldo = cuenta.getSaldoInicial().add(valor);
 
         if ("DEBITO".equals(dto.tipoMovimiento())) {
             if (nuevoSaldo.compareTo(BigDecimal.ZERO) < 0) {
@@ -64,46 +66,56 @@ public class MovimientoServiceImpl implements MovimientoService {
             checkDailyLimit(cuenta.getId(), valor.abs());
         }
 
-        Movimiento movimiento = new Movimiento();
+        var movimiento = movimientoMapper.toEntity(dto);
         movimiento.setCuenta(cuenta);
-        movimiento.setTipoMovimiento(dto.tipoMovimiento());
         movimiento.setValor(valor);
         movimiento.setSaldo(nuevoSaldo);
         movimiento.setFecha(LocalDateTime.now());
 
         cuenta.setSaldoInicial(nuevoSaldo);
+
         cuentaRepository.save(cuenta);
+
         return movimientoMapper.toDto(movimientoRepository.save(movimiento));
     }
 
     @Override
     public MovimientoResponseDto update(Long id, MovimientoRequestDto dto) {
-        Movimiento movimiento = getOrThrow(id);
+
+        var movimiento = getOrThrow(id);
         movimiento.setTipoMovimiento(dto.tipoMovimiento());
         movimiento.setValor(normalizeValor(dto.tipoMovimiento(), dto.valor()));
+
         return movimientoMapper.toDto(movimientoRepository.save(movimiento));
     }
 
     @Override
     public void delete(Long id) {
+
         movimientoRepository.delete(getOrThrow(id));
     }
 
     private BigDecimal normalizeValor(String tipo, BigDecimal valor) {
+
         return "DEBITO".equals(tipo) ? valor.abs().negate() : valor.abs();
     }
 
     private void checkDailyLimit(Long cuentaId, BigDecimal montoAbsoluto) {
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-        LocalDateTime endOfDay = startOfDay.plusDays(1);
-        BigDecimal debitosHoy = movimientoRepository
+
+        var startOfDay = LocalDate.now().atStartOfDay();
+
+        var endOfDay = startOfDay.plusDays(1);
+
+        var debitosHoy = movimientoRepository
                 .sumDebitosDiarios(cuentaId, startOfDay, endOfDay).abs();
+
         if (debitosHoy.add(montoAbsoluto).compareTo(dailyWithdrawalLimit) > 0) {
             throw new CupoDiarioExcedidoException();
         }
     }
 
     private Movimiento getOrThrow(Long id) {
+
         return movimientoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Movimiento", id));
     }

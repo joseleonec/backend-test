@@ -29,6 +29,7 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     @Transactional(readOnly = true)
     public List<ClienteResponseDto> findAll() {
+
         return clienteRepository.findAll().stream()
                 .map(clienteMapper::toDto)
                 .toList();
@@ -37,43 +38,55 @@ public class ClienteServiceImpl implements ClienteService {
     @Override
     @Transactional(readOnly = true)
     public ClienteResponseDto findById(Long id) {
+
         return clienteMapper.toDto(getOrThrow(id));
     }
 
     @Override
     public ClienteResponseDto create(ClienteRequestDto dto) {
+
         if (clienteRepository.existsByClienteid(dto.clienteid())) {
             throw new ResourceAlreadyExistsException("Cliente", "clienteid", dto.clienteid());
         }
+
         if (clienteRepository.existsByIdentificacion(dto.identificacion())) {
             throw new ResourceAlreadyExistsException("Cliente", "identificacion", dto.identificacion());
         }
-        Cliente cliente = clienteMapper.toEntity(dto);
+
+        var cliente = clienteMapper.toEntity(dto);
         cliente.setContrasena(passwordEncoder.encode(dto.contrasena()));
+
         return clienteMapper.toDto(clienteRepository.save(cliente));
     }
 
     @Override
     public ClienteResponseDto update(Long id, ClienteRequestDto dto) {
-        Cliente cliente = getOrThrow(id);
+
+        var cliente = getOrThrow(id);
+
         clienteMapper.updateFromDto(dto, cliente);
+
         if (dto.contrasena() != null && !dto.contrasena().isBlank()) {
             cliente.setContrasena(passwordEncoder.encode(dto.contrasena()));
         }
+
         return clienteMapper.toDto(clienteRepository.save(cliente));
     }
 
     @Override
     public ClienteResponseDto patch(Long id, ClienteRequestDto dto) {
+
         return update(id, dto);
     }
 
     @Override
     public void delete(Long id) {
+
         clienteRepository.delete(getOrThrow(id));
     }
 
     private Cliente getOrThrow(Long id) {
+
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente", id));
     }
