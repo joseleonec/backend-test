@@ -14,7 +14,7 @@ import com.devsu.banking.config.exception.CupoDiarioExcedidoException;
 import com.devsu.banking.config.exception.ResourceAlreadyExistsException;
 import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.config.exception.SaldoInsuficienteException;
-import com.devsu.banking.domain.dto.ErrorResponseDto;
+import com.devsu.banking.dto.ErrorResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
