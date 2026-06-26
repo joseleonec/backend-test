@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -15,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.domain.dto.MovimientoResponseDto;
 import com.devsu.banking.domain.dto.ReporteDto;
-import com.devsu.banking.domain.entity.Cliente;
 import com.devsu.banking.domain.entity.Cuenta;
 import com.devsu.banking.domain.entity.Movimiento;
 import com.devsu.banking.domain.mapper.MovimientoMapper;
@@ -45,14 +43,15 @@ public class ReporteServiceImpl implements ReporteService {
 
     @Override
     public ReporteDto generarReporte(Long clienteId, LocalDate desde, LocalDate hasta) {
-        Cliente cliente = clienteRepository.findById(clienteId)
+
+        var cliente = clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente", clienteId));
 
-        LocalDateTime from = desde.atStartOfDay();
-        LocalDateTime to = hasta.plusDays(1).atStartOfDay();
+        var dateFrom = desde.atStartOfDay();
+        var dateTo = hasta.plusDays(1).atStartOfDay();
 
         List<Movimiento> movimientos = movimientoRepository
-                .findByCuenta_Cliente_IdAndFechaBetween(clienteId, from, to);
+                .findByCuentaClienteIdAndFechaBetween(clienteId, dateFrom, dateTo);
 
         Map<Cuenta, List<Movimiento>> byCuenta = movimientos.stream()
                 .collect(Collectors.groupingBy(Movimiento::getCuenta));
@@ -67,38 +66,40 @@ public class ReporteServiceImpl implements ReporteService {
 
     @Override
     public byte[] generarReportePdf(Long clienteId, LocalDate desde, LocalDate hasta) {
+
         ReporteDto reporte = generarReporte(clienteId, desde, hasta);
+
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            Document doc = new Document(PageSize.A4);
-            PdfWriter.getInstance(doc, baos);
-            doc.open();
+            try (Document doc = new Document(PageSize.A4)) {
+                PdfWriter.getInstance(doc, baos);
+                doc.open();
 
-            Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, Color.DARK_GRAY);
-            Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
-            Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
+                Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16, Color.DARK_GRAY);
+                Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 12);
+                Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 10);
 
-            doc.add(new Paragraph("Estado de Cuenta", titleFont));
-            doc.add(new Paragraph("Cliente: " + reporte.clienteNombre(), headerFont));
-            doc.add(new Paragraph("Período: " + reporte.desde() + " — " + reporte.hasta(), bodyFont));
-            doc.add(Chunk.NEWLINE);
-
-            for (ReporteDto.CuentaReporteDto cuenta : reporte.cuentas()) {
-                doc.add(new Paragraph(
-                        "Cuenta: " + cuenta.numeroCuenta() + " (" + cuenta.tipoCuenta() + ")", headerFont));
-                doc.add(new Paragraph("Saldo disponible: " + cuenta.saldoDisponible(), bodyFont));
-                doc.add(new Paragraph("Total créditos: " + cuenta.totalCreditos(), bodyFont));
-                doc.add(new Paragraph("Total débitos: " + cuenta.totalDebitos(), bodyFont));
+                doc.add(new Paragraph("Estado de Cuenta", titleFont));
+                doc.add(new Paragraph("Cliente: " + reporte.clienteNombre(), headerFont));
+                doc.add(new Paragraph("Período: " + reporte.desde() + " — " + reporte.hasta(), bodyFont));
                 doc.add(Chunk.NEWLINE);
 
-                for (MovimientoResponseDto mov : cuenta.movimientos()) {
+                for (ReporteDto.CuentaReporteDto cuenta : reporte.cuentas()) {
                     doc.add(new Paragraph(
-                            "  " + mov.fecha() + " | " + mov.tipoMovimiento()
-                            + " | " + mov.valor() + " | Saldo: " + mov.saldo(), bodyFont));
+                            "Cuenta: " + cuenta.numeroCuenta() + " (" + cuenta.tipoCuenta() + ")", headerFont));
+                    doc.add(new Paragraph("Saldo disponible: " + cuenta.saldoDisponible(), bodyFont));
+                    doc.add(new Paragraph("Total créditos: " + cuenta.totalCreditos(), bodyFont));
+                    doc.add(new Paragraph("Total débitos: " + cuenta.totalDebitos(), bodyFont));
+                    doc.add(Chunk.NEWLINE);
+
+                    for (MovimientoResponseDto mov : cuenta.movimientos()) {
+                        doc.add(new Paragraph(
+                                "  " + mov.fecha() + " | " + mov.tipoMovimiento()
+                                + " | " + mov.valor() + " | Saldo: " + mov.saldo(), bodyFont));
+                    }
+                    doc.add(Chunk.NEWLINE);
                 }
-                doc.add(Chunk.NEWLINE);
             }
 
-            doc.close();
             return baos.toByteArray();
         } catch (Exception e) {
             throw new RuntimeException("Error generating PDF report", e);
@@ -106,6 +107,7 @@ public class ReporteServiceImpl implements ReporteService {
     }
 
     private ReporteDto.CuentaReporteDto buildCuentaReporte(Cuenta cuenta, List<Movimiento> movs) {
+
         List<MovimientoResponseDto> movsDtos = movs.stream().map(movimientoMapper::toDto).toList();
 
         BigDecimal totalCreditos = movs.stream()

@@ -2,6 +2,7 @@ package com.devsu.banking.domain.service;
 
 import java.util.List;
 
+import com.devsu.banking.domain.dto.MovimientoByNumeroCuentaRequestDto;
 import com.devsu.banking.domain.dto.MovimientoRequestDto;
 import com.devsu.banking.domain.dto.MovimientoResponseDto;
 
@@ -12,6 +13,8 @@ public interface MovimientoService {
     MovimientoResponseDto findById(Long id);
 
     MovimientoResponseDto registrar(MovimientoRequestDto dto);
+
+    MovimientoResponseDto registrarPorNumeroCuenta(MovimientoByNumeroCuentaRequestDto dto);
 
     MovimientoResponseDto update(Long id, MovimientoRequestDto dto);
 

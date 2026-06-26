@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.devsu.banking.domain.dto.MovimientoByNumeroCuentaRequestDto;
 import com.devsu.banking.domain.dto.MovimientoRequestDto;
 import com.devsu.banking.domain.dto.MovimientoResponseDto;
 import com.devsu.banking.domain.service.MovimientoService;
@@ -39,8 +40,10 @@ public class MovimientoController {
     }
 
     @PostMapping
-    public ResponseEntity<MovimientoResponseDto> create(@Valid @RequestBody MovimientoRequestDto dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(movimientoService.registrar(dto));
+    public ResponseEntity<MovimientoResponseDto> create(
+            @Valid @RequestBody MovimientoByNumeroCuentaRequestDto dto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(movimientoService.registrarPorNumeroCuenta(dto));
     }
 
     @PutMapping("/{id}")

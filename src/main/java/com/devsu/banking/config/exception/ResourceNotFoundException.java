@@ -2,6 +2,6 @@ package com.devsu.banking.config.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String resource, Object id) {
-        super(resource + " not found with id: " + id);
+        super(resource + " no encontrado con id: " + id);
     }
 }

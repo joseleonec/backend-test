@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.devsu.banking.config.exception.CupoDiarioExcedidoException;
 import com.devsu.banking.config.exception.ResourceNotFoundException;
 import com.devsu.banking.config.exception.SaldoInsuficienteException;
+import com.devsu.banking.domain.dto.MovimientoByNumeroCuentaRequestDto;
 import com.devsu.banking.domain.dto.MovimientoRequestDto;
 import com.devsu.banking.domain.dto.MovimientoResponseDto;
 import com.devsu.banking.domain.entity.Movimiento;
@@ -77,6 +78,15 @@ public class MovimientoServiceImpl implements MovimientoService {
         cuentaRepository.save(cuenta);
 
         return movimientoMapper.toDto(movimientoRepository.save(movimiento));
+    }
+
+    @Override
+    public MovimientoResponseDto registrarPorNumeroCuenta(MovimientoByNumeroCuentaRequestDto dto) {
+
+        var cuenta = cuentaRepository.findByNumeroCuenta(dto.numeroCuenta())
+                .orElseThrow(() -> new ResourceNotFoundException("Cuenta", dto.numeroCuenta()));
+
+        return registrar(new MovimientoRequestDto(cuenta.getId(), dto.tipoMovimiento(), dto.valor()));
     }
 
     @Override
