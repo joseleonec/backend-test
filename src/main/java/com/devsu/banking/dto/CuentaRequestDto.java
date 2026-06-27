@@ -18,8 +18,8 @@ public record CuentaRequestDto(
         @DecimalMin("0.00")
         BigDecimal saldoInicial,
         Boolean estado,
-        @NotNull
-        Long clienteId
+        @NotBlank
+        String clienteid
         ) {
 
 }

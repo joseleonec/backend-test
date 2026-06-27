@@ -51,7 +51,7 @@ public class CuentaServiceImpl implements CuentaService {
         }
 
         var cuenta = cuentaMapper.toEntity(dto);
-        cuenta.setCliente(resolveCliente(dto.clienteId()));
+        cuenta.setCliente(resolveCliente(dto.clienteid()));
 
         return cuentaMapper.toDto(cuentaRepository.save(cuenta));
     }
@@ -63,7 +63,7 @@ public class CuentaServiceImpl implements CuentaService {
 
         cuentaMapper.updateFromDto(dto, cuenta);
 
-        cuenta.setCliente(resolveCliente(dto.clienteId()));
+        cuenta.setCliente(resolveCliente(dto.clienteid()));
 
         return cuentaMapper.toDto(cuentaRepository.save(cuenta));
     }
@@ -89,9 +89,9 @@ public class CuentaServiceImpl implements CuentaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Cuenta", id));
     }
 
-    private Cliente resolveCliente(Long clienteId) {
+    private Cliente resolveCliente(String clienteid) {
 
-        return clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente", clienteId));
+        return clienteRepository.findByClienteid(clienteid)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente", clienteid));
     }
 }
