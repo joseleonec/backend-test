@@ -63,7 +63,9 @@ public class CuentaServiceImpl implements CuentaService {
 
         cuentaMapper.updateFromDto(dto, cuenta);
 
-        cuenta.setCliente(resolveCliente(dto.clienteid()));
+        if (dto.clienteid() != null && !dto.clienteid().isBlank()) {
+            cuenta.setCliente(resolveCliente(dto.clienteid()));
+        }
 
         return cuentaMapper.toDto(cuentaRepository.save(cuenta));
     }
