@@ -64,6 +64,14 @@ public class ClienteServiceImpl implements ClienteService {
 
         var cliente = getOrThrow(id);
 
+        if (clienteRepository.existsByClienteidAndIdNot(dto.clienteid(), id)) {
+            throw new ResourceAlreadyExistsException("Cliente", "clienteid", dto.clienteid());
+        }
+
+        if (clienteRepository.existsByIdentificacionAndIdNot(dto.identificacion(), id)) {
+            throw new ResourceAlreadyExistsException("Cliente", "identificacion", dto.identificacion());
+        }
+
         clienteMapper.updateFromDto(dto, cliente);
 
         if (dto.contrasena() != null && !dto.contrasena().isBlank()) {
